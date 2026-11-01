@@ -16,6 +16,7 @@
   --ink:#f7e9ec; --ink-soft:#d9b9c1; --line:rgba(242,196,207,.22);
 }
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
 html,body{height:100%}
 body{
   font-family:"Cormorant Garamond",Georgia,serif;
@@ -163,9 +164,9 @@ body.vista-admin .cinta-admin{display:block}
 <button class="cinta-admin" id="cinta-admin">Vista previa · volver al panel</button>
 
 <!-- Canciones: sube estos 3 archivos con estos nombres exactos -->
-<audio id="a-carta" src="cancion.mp3.mp3" loop preload="auto"></audio>       <!-- Venecia sin ti -->
-<audio id="a-fin" src="hey.mp3.mp3" loop preload="none"></audio>             <!-- Hey - Julio Iglesias -->
-<audio id="a-cont" src="cada-dia-mas.mp3.mp3" loop preload="none"></audio>   <!-- Cada día más - Julio Iglesias -->
+<audio id="a-carta" loop preload="auto"></audio>       <!-- Venecia sin ti -->
+<audio id="a-fin" loop preload="auto"></audio>             <!-- Hey - Julio Iglesias -->
+<audio id="a-cont" loop preload="auto"></audio>   <!-- Cada día más - Julio Iglesias -->
 <button id="musica-btn" aria-label="Pausar o reproducir la canción">
   <svg id="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
   <svg id="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:none"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M3 3l18 18"/></svg>
@@ -241,6 +242,7 @@ body.vista-admin .cinta-admin{display:block}
       <h3>Estado de la elección</h3>
       <div class="estado-grande" id="adm-estado"></div>
       <div class="estado-sub" id="adm-fecha"></div>
+      <div class="estado-sub" id="adm-musica">♪ Revisando canciones…</div>
       <div class="fila-btns">
         <button class="btn" id="adm-carta">Ver la carta</button>
         <button class="btn" id="adm-cont">Vista previa: Continuidad</button>
@@ -302,6 +304,17 @@ function mostrar(id){
 
 /* ===== Música (fundido entre canciones) ===== */
 const pistas = { carta:$("#a-carta"), fin:$("#a-fin"), cont:$("#a-cont") };
+const ARCHIVOS = { carta:["cancion.mp3","cancion.mp3.mp3"], fin:["hey.mp3","hey.mp3.mp3"], cont:["cada-dia-mas.mp3","cada-dia-mas.mp3.mp3"] };
+const TITULOS = { carta:"Venecia sin ti", fin:"Hey", cont:"Cada día más" };
+const fallas = {};
+Object.keys(pistas).forEach(k=>{
+  const el=pistas[k]; let i=0; el.src=ARCHIVOS[k][0];
+  el.addEventListener("error",()=>{ i++; if(i<ARCHIVOS[k].length){ el.src=ARCHIVOS[k][i]; el.load(); if(actual===el) el.play().then(()=>{iconos(true);fundir(el,.8,2000);}).catch(()=>{}); }
+    else { fallas[k]=true; avisoMusica(); } });
+});
+function avisoMusica(){ const n=$("#adm-musica"); if(!n) return;
+  n.textContent = Object.keys(pistas).map(k=> (fallas[k]?"⚠️ ":pistas[k].readyState>=1?"✓ ":"… ")+TITULOS[k]
+    +(fallas[k]?" — no se encontró el archivo "+ARCHIVOS[k][0]:"")).join("   ·   "); }
 const mBtn = $("#musica-btn"); let actual = null;
 function fundir(el, hasta, ms, fin){ const desde=el.volume, n=Math.max(1,ms/80); let i=0;
   clearInterval(el._f); el._f=setInterval(()=>{ i++; el.volume=Math.max(0,Math.min(1,desde+(hasta-desde)*i/n)); if(i>=n){clearInterval(el._f); fin&&fin();} },80); }
@@ -311,7 +324,7 @@ function sonar(nombre){
   if(vieja) fundir(vieja, 0, 1500, ()=>vieja.pause());
   nueva.currentTime = 0; nueva.volume = 0;
   nueva.play().then(()=>{ mBtn.classList.add("visible"); iconos(true); fundir(nueva,.8,2500); })
-              .catch(()=>{ if(nueva.error) return; mBtn.classList.add("visible"); iconos(false); });
+              .catch(()=>{ mBtn.classList.add("visible"); iconos(false); });
 }
 function iconos(on){ $("#ico-on").style.display=on?"":"none"; $("#ico-off").style.display=on?"none":""; mBtn.classList.toggle("sonando",on); }
 mBtn.onclick = ()=>{ if(!actual) return; if(actual.paused){ actual.play(); iconos(true);} else { actual.pause(); iconos(false);} };
@@ -374,6 +387,11 @@ addEventListener("scroll",()=>{
 
 /* ===== Decisión ===== */
 function prepararDecision(){
+  if(S.preview){
+    $("#caminos").hidden=false; $("#aviso").hidden=false; $("#bloqueo").hidden=false; $("#ya-elegido").hidden=true;
+    $("#bloqueo").textContent="Vista previa: los botones solo te muestran cada final, no guardan nada";
+    document.querySelectorAll(".camino").forEach(b=>b.disabled=false); return;
+  }
   const ya = !!S.eleccion;
   $("#caminos").hidden = ya || S.preview; $("#bloqueo").hidden = ya || S.preview; $("#aviso").hidden = ya || S.preview;
   $("#ya-elegido").hidden = !ya || S.preview;
@@ -383,6 +401,7 @@ function prepararDecision(){
 }
 let pendiente=null;
 document.querySelectorAll(".camino").forEach(b=>b.onclick=()=>{
+  if(S.preview){ abrirFinal(b.dataset.op, S.textos[b.dataset.op]); return; }
   if(b.disabled||S.eleccion) return;
   pendiente=b.dataset.op;
   $("#modal-titulo").textContent="¿Estás segura?";
@@ -443,6 +462,7 @@ function cargarAdmin(r){
     cont.innerHTML=""; cont.appendChild(tb);
   }
   document.body.classList.remove("vista-admin","modo-fin"); silencio(); mostrar("admin");
+  setTimeout(avisoMusica,2500);
 }
 async function refrescarAdmin(extra){ try{ const r=await api(Object.assign({accion:"entrar"},extra||{})); if(r.ok&&r.rol==="admin") cargarAdmin(r);}catch(e){} }
 $("#adm-actualizar").onclick=()=>refrescarAdmin();
