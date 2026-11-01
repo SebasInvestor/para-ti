@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Una carta</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg1:#12060b; --bg2:#2a0d18; --bg3:#4a1426;
+  --rose:#f2c4cf; --rose-2:#e48aa0; --gold:#e9c98f;
+  --ink:#f7e9ec; --ink-soft:#d9b9c1; --line:rgba(242,196,207,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Cormorant Garamond",Georgia,serif;
+  color:var(--ink); background:var(--bg1);
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+#cielo{position:fixed;inset:0;z-index:0;pointer-events:none}
+.fondo{
+  position:fixed;inset:0;z-index:-1;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, var(--bg3) 0%, transparent 60%),
+    radial-gradient(900px 600px at 100% 110%, #3a0f22 0%, transparent 60%),
+    linear-gradient(180deg,var(--bg2),var(--bg1));
+  transition:filter 2.5s ease;
+}
+body.modo-fin .fondo{filter:grayscale(.85) brightness(.7) hue-rotate(160deg)}
+
+.pantalla{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:none}
+.pantalla.activa{display:block;animation:entra 1.4s ease both}
+@keyframes entra{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ---------- INICIO ---------- */
+#inicio.activa{display:flex;align-items:center;justify-content:center;padding:32px 20px}
+.portada{max-width:640px;text-align:center}
+.corazon{width:54px;height:54px;margin:0 auto 26px;animation:latido 1.6s ease-in-out infinite;filter:drop-shadow(0 0 18px rgba(228,138,160,.55))}
+@keyframes latido{0%,100%{transform:scale(1)}15%{transform:scale(1.14)}30%{transform:scale(1)}45%{transform:scale(1.09)}}
+.pregunta{font-family:"Pinyon Script",cursive;font-weight:400;font-size:clamp(46px,9vw,78px);line-height:1.05;color:var(--rose);text-shadow:0 0 30px rgba(228,138,160,.35)}
+.intro{margin-top:26px;font-size:clamp(19px,2.6vw,23px);line-height:1.65;color:var(--ink-soft);font-style:italic}
+.intro strong{font-style:normal;font-weight:500;color:var(--ink)}
+.adorno{margin:30px auto 0;width:180px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+
+.btn{
+  appearance:none;border:1px solid var(--rose-2);background:rgba(228,138,160,.08);color:var(--ink);
+  font-family:"Cormorant Garamond",serif;font-size:19px;letter-spacing:.22em;text-transform:uppercase;
+  padding:15px 38px;border-radius:999px;cursor:pointer;margin-top:36px;
+  transition:background .35s,box-shadow .35s,transform .2s;
+}
+.btn:hover{background:rgba(228,138,160,.22);box-shadow:0 0 34px rgba(228,138,160,.35)}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.nota-musica{margin-top:14px;font-size:15px;color:var(--ink-soft);opacity:.7;font-style:italic}
+
+/* ---------- CARTA ---------- */
+#progreso{position:fixed;top:0;left:0;height:3px;width:0;z-index:5;background:linear-gradient(90deg,var(--rose-2),var(--gold));box-shadow:0 0 12px var(--rose-2);transition:width .2s}
+.hoja{max-width:720px;margin:0 auto;padding:90px 22px 120px}
+.encabezado{text-align:center;margin-bottom:56px}
+.encabezado h2{font-family:"Pinyon Script",cursive;font-weight:400;font-size:clamp(44px,8vw,68px);color:var(--rose)}
+.encabezado .sub{margin-top:8px;letter-spacing:.3em;text-transform:uppercase;font-size:13px;color:var(--gold);opacity:.85}
+.hoja p{font-size:clamp(19px,2.4vw,22px);line-height:1.85;margin:0 0 1.5em;text-align:justify;hyphens:auto;color:var(--ink)}
+.hoja p:first-of-type::first-letter{font-family:"Pinyon Script",cursive;float:left;font-size:4.2em;line-height:.8;padding:6px 10px 0 0;color:var(--rose)}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 1.2s ease,transform 1.2s ease}
+.reveal.visto{opacity:1;transform:none}
+
+.decision{margin-top:70px;text-align:center;border-top:1px solid var(--line);padding-top:56px}
+.decision h3{font-family:"Pinyon Script",cursive;font-weight:400;font-size:clamp(40px,7vw,58px);color:var(--rose)}
+.decision .aviso{margin:10px auto 0;max-width:480px;font-style:italic;color:var(--ink-soft);font-size:19px;line-height:1.6}
+.bloqueo{margin-top:30px;font-size:16px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);opacity:.75}
+.caminos{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}
+.camino{
+  appearance:none;cursor:pointer;border-radius:22px;padding:30px 18px;font-family:"Cormorant Garamond",serif;
+  font-size:clamp(17px,2.4vw,20px);letter-spacing:.14em;text-transform:uppercase;line-height:1.4;color:var(--ink);
+  transition:transform .3s,box-shadow .35s,background .35s;
+}
+.camino small{display:block;margin-top:10px;letter-spacing:.05em;text-transform:none;font-style:italic;font-size:16px;color:var(--ink-soft)}
+.camino.fin{background:rgba(140,150,170,.08);border:1px solid rgba(170,180,200,.35)}
+.camino.fin:hover{background:rgba(140,150,170,.18);box-shadow:0 0 30px rgba(170,180,200,.25);transform:translateY(-3px)}
+.camino.cont{background:rgba(228,138,160,.12);border:1px solid var(--rose-2)}
+.camino.cont:hover{background:rgba(228,138,160,.25);box-shadow:0 0 36px rgba(228,138,160,.4);transform:translateY(-3px)}
+.camino:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+.ya-elegido{margin-top:30px}
+.ya-elegido p{text-align:center!important;font-style:italic;color:var(--ink-soft)}
+@media (max-width:540px){.caminos{grid-template-columns:1fr}}
+
+/* ---------- MODAL ---------- */
+.modal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(10,3,6,.78);backdrop-filter:blur(6px)}
+.modal.abierto{display:flex;animation:entra .5s ease both}
+.modal .caja{max-width:440px;width:100%;text-align:center;padding:36px 26px;border-radius:24px;background:linear-gradient(180deg,#2a0d18,#170710);border:1px solid var(--line)}
+.modal h4{font-family:"Pinyon Script",cursive;font-weight:400;font-size:44px;color:var(--rose)}
+.modal p{margin-top:12px;font-size:19px;line-height:1.6;color:var(--ink-soft)}
+.modal p b{color:var(--ink);font-weight:600;letter-spacing:.08em}
+.modal .acciones{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.modal .btn{margin-top:22px;padding:12px 26px;font-size:16px}
+.btn.sec{border-color:var(--line);background:transparent}
+
+/* ---------- FINAL ---------- */
+.final-hoja{max-width:680px;margin:0 auto;padding:100px 22px 140px}
+.final-hoja h2{text-align:center;font-family:"Pinyon Script",cursive;font-weight:400;font-size:clamp(44px,8vw,66px);color:var(--rose);margin-bottom:46px}
+body.modo-fin .final-hoja h2{color:#c9d0dc}
+.final-hoja p{font-size:clamp(19px,2.4vw,22px);line-height:1.9;margin-bottom:1.4em;text-align:justify;opacity:0;transform:translateY(16px);transition:opacity 1.6s ease,transform 1.6s ease}
+.final-hoja p.on{opacity:1;transform:none}
+.cierre{text-align:center;margin-top:40px;opacity:0;transition:opacity 2s ease}
+.cierre.on{opacity:1}
+.cierre .tuyo{font-family:"Pinyon Script",cursive;font-size:clamp(34px,6vw,46px);color:var(--rose);line-height:1.2}
+.cierre img{display:block;margin:18px auto 0;width:150px;height:auto;filter:drop-shadow(0 0 10px rgba(242,196,207,.4))}
+.volver{display:block;margin:60px auto 0}
+
+/* ---------- MUSICA ---------- */
+#musica-btn{position:fixed;right:18px;bottom:18px;z-index:10;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:rgba(30,8,16,.7);color:var(--rose);cursor:pointer;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+#musica-btn.visible{display:flex}
+#musica-btn svg{width:22px;height:22px}
+#musica-btn.sonando{animation:pulso 2.4s ease-in-out infinite}
+@keyframes pulso{0%,100%{box-shadow:0 0 0 0 rgba(228,138,160,.35)}50%{box-shadow:0 0 0 10px rgba(228,138,160,0)}}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.final-hoja p,.cierre{opacity:1;transform:none}}
+
+/* ---------- ACCESO ---------- */
+#acceso.activa{display:flex;align-items:center;justify-content:center;padding:32px 20px}
+.sobre{max-width:420px;width:100%;text-align:center;padding:42px 28px;border-radius:26px;background:rgba(30,8,16,.55);border:1px solid var(--line);backdrop-filter:blur(8px)}
+.sobre h1{font-family:"Pinyon Script",cursive;font-weight:400;font-size:clamp(44px,10vw,60px);color:var(--rose);line-height:1.1}
+.sobre p{margin-top:10px;color:var(--ink-soft);font-style:italic;font-size:19px;line-height:1.5}
+.campo{width:100%;margin-top:22px;padding:14px 18px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:var(--ink);font-family:inherit;font-size:19px;text-align:center}
+.campo::placeholder{color:var(--ink-soft);opacity:.6}
+.campo:focus{outline:none;border-color:var(--rose-2);box-shadow:0 0 0 3px rgba(228,138,160,.18)}
+.sobre .btn{margin-top:22px;width:100%}
+.error{min-height:24px;margin-top:14px;color:#ffb3c1;font-size:17px}
+.cargando{opacity:.6;pointer-events:none}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:gira .8s linear infinite;vertical-align:-2px}
+@keyframes gira{to{transform:rotate(360deg)}}
+
+/* ---------- PANEL ADMIN ---------- */
+.panel{max-width:820px;margin:0 auto;padding:70px 18px 100px}
+.panel h2{font-family:"Pinyon Script",cursive;font-weight:400;font-size:clamp(42px,8vw,58px);color:var(--rose);text-align:center}
+.tarjeta{margin-top:26px;padding:24px;border-radius:20px;background:rgba(30,8,16,.6);border:1px solid var(--line)}
+.tarjeta h3{font-size:14px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);font-weight:500}
+.estado-grande{margin-top:10px;font-size:clamp(22px,4vw,28px);font-weight:600}
+.estado-sub{color:var(--ink-soft);font-style:italic;margin-top:4px;font-size:18px}
+.fila-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.fila-btns .btn{margin-top:0;padding:11px 20px;font-size:14px;letter-spacing:.14em}
+.btn.peligro{border-color:#ff8fa3;color:#ffc2cd}
+.tabla{width:100%;border-collapse:collapse;margin-top:12px;font-size:17px}
+.tabla td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.tabla td:first-child{white-space:nowrap;color:var(--ink-soft);font-size:15px}
+.tabla .ev{font-weight:600}
+.tabla .det{color:var(--ink-soft);font-size:15px;word-break:break-word}
+.vacio{color:var(--ink-soft);font-style:italic;margin-top:10px}
+.cinta-admin{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:12;font-size:13px;letter-spacing:.2em;text-transform:uppercase;padding:6px 14px;border-radius:999px;background:rgba(233,201,143,.15);border:1px solid var(--gold);color:var(--gold);display:none;cursor:pointer}
+body.vista-admin .cinta-admin{display:block}
+@media (max-width:540px){.tabla td:first-child{white-space:normal}}
+</style>
+</head>
+<body>
+<div class="fondo"></div>
+<canvas id="cielo"></canvas>
+<div id="progreso"></div>
+<button class="cinta-admin" id="cinta-admin">Vista previa · volver al panel</button>
+
+<!-- Canciones: sube estos 3 archivos con estos nombres exactos -->
+<audio id="a-carta" src="cancion.mp3" loop preload="auto"></audio>       <!-- Venecia sin ti -->
+<audio id="a-fin" src="hey.mp3" loop preload="none"></audio>             <!-- Hey - Julio Iglesias -->
+<audio id="a-cont" src="cada-dia-mas.mp3" loop preload="none"></audio>   <!-- Cada día más - Julio Iglesias -->
+<button id="musica-btn" aria-label="Pausar o reproducir la canción">
+  <svg id="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  <svg id="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:none"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M3 3l18 18"/></svg>
+</button>
+
+<!-- ============ PANTALLA 0: ACCESO ============ -->
+<section id="acceso" class="pantalla activa">
+  <form class="sobre" id="form-acceso" autocomplete="on">
+    <svg class="corazon" viewBox="0 0 24 24"><path fill="#e48aa0" d="M12 21s-7.5-4.6-10-9.3C.3 8.4 2.2 4 6.1 4c2.2 0 3.6 1.2 4.4 2.4h3c.8-1.2 2.2-2.4 4.4-2.4 3.9 0 5.8 4.4 4.1 7.7C19.5 16.4 12 21 12 21z"/></svg>
+    <h1>Una carta para ti</h1>
+    <p>Escribe tu correo electrónico para abrirla.</p>
+    <input class="campo" id="email" type="email" inputmode="email" placeholder="tucorreo@gmail.com" required autocomplete="email">
+    <input class="campo" id="clave" type="password" placeholder="Clave" hidden autocomplete="current-password">
+    <button class="btn" id="btn-entrar" type="submit">Abrir</button>
+    <div class="error" id="error" role="alert"></div>
+  </form>
+</section>
+
+<!-- ============ PANTALLA 1: INICIO ============ -->
+<section id="inicio" class="pantalla">
+  <div class="portada">
+    <svg class="corazon" viewBox="0 0 24 24"><path fill="#e48aa0" d="M12 21s-7.5-4.6-10-9.3C.3 8.4 2.2 4 6.1 4c2.2 0 3.6 1.2 4.4 2.4h3c.8-1.2 2.2-2.4 4.4-2.4 3.9 0 5.8 4.4 4.1 7.7C19.5 16.4 12 21 12 21z"/></svg>
+    <h1 class="pregunta">¿Qué es el amor?</h1>
+    <p class="intro">Arranco esta introducción preguntándome qué es el amor. Según internet, <strong>el amor es una mezcla compleja de biología, psicología y construcción social que se define como un sentimiento profundo de afinidad, afecto y compromiso hacia otra persona, ser u objeto.</strong></p>
+    <div class="adorno"></div>
+    <button class="btn" id="btn-continuar">Continuar</button>
+    <p class="nota-musica">Sube el volumen ♪</p>
+  </div>
+</section>
+
+<!-- ============ PANTALLA 2: CARTA ============ -->
+<section id="carta" class="pantalla">
+  <article class="hoja">
+    <header class="encabezado">
+      <h2>Catalina</h2>
+      <div class="sub">Venecia sin ti</div>
+    </header>
+    <div id="carta-texto"></div>
+    <div class="decision" id="decision">
+      <h3>Tu elección</h3>
+      <p class="aviso" id="aviso">Solo podrás abrir uno de los dos caminos. El otro quedará cerrado para siempre, en cualquier dispositivo.</p>
+      <p class="bloqueo" id="bloqueo">Lee la carta completa para poder elegir</p>
+      <div class="caminos" id="caminos">
+        <button class="camino fin" data-op="fin" disabled>Fin de nuestra historia</button>
+        <button class="camino cont" data-op="cont" disabled>Continuidad de nuestra historia</button>
+      </div>
+      <div class="ya-elegido" id="ya-elegido" hidden>
+        <p id="ya-texto"></p>
+        <button class="btn" id="btn-releer">Volver a leer</button>
+      </div>
+    </div>
+  </article>
+</section>
+
+<!-- ============ PANTALLA 3: FINAL ============ -->
+<section id="final" class="pantalla">
+  <article class="final-hoja">
+    <h2 id="final-titulo"></h2>
+    <div id="final-texto"></div>
+    <div class="cierre" id="cierre" hidden>
+      <div class="tuyo">Por siempre y para siempre tuyo.</div>
+      <img src="firma.png" alt="Firma">
+    </div>
+    <button class="btn sec volver" id="btn-volver">Volver a la carta</button>
+  </article>
+</section>
+
+<!-- ============ PANTALLA ADMIN ============ -->
+<section id="admin" class="pantalla">
+  <div class="panel">
+    <h2>Panel</h2>
+    <div class="tarjeta">
+      <h3>Estado de la elección</h3>
+      <div class="estado-grande" id="adm-estado"></div>
+      <div class="estado-sub" id="adm-fecha"></div>
+      <div class="fila-btns">
+        <button class="btn" id="adm-carta">Ver la carta</button>
+        <button class="btn" id="adm-cont">Vista previa: Continuidad</button>
+        <button class="btn sec" id="adm-fin">Vista previa: Fin</button>
+      </div>
+      <div class="fila-btns">
+        <button class="btn sec" id="adm-actualizar">Actualizar</button>
+        <button class="btn peligro" id="adm-reiniciar">Reiniciar elección</button>
+        <button class="btn sec" id="adm-salir">Salir</button>
+      </div>
+    </div>
+    <div class="tarjeta">
+      <h3>Actividad</h3>
+      <div id="adm-registro"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODAL ============ -->
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="caja">
+    <h4 id="modal-titulo">¿Estás segura?</h4>
+    <p id="modal-texto"></p>
+    <div class="acciones">
+      <button class="btn sec" id="modal-no">Pensarlo</button>
+      <button class="btn" id="modal-si">Sí, abrir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ======================= CONFIGURACIÓN =======================
+   Pega aquí la URL de tu Google Apps Script (termina en /exec). */
+const URL_SERVIDOR = "https://script.google.com/macros/s/AKfycbzZJWkynSfvW_MHUn3W8-Cd8SwDQSeuXrJWKmsoNUzvKv0GIPfcOAAgEYYksq9S9EBE/exec";
+/* ============================================================ */
+
+const NOMBRES = { fin: "FIN DE NUESTRA HISTORIA", cont: "CONTINUIDAD DE NUESTRA HISTORIA" };
+const $ = s => document.querySelector(s);
+const ls = { get:k=>{try{return localStorage.getItem(k)}catch(e){return null}}, set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}, del:k=>{try{localStorage.removeItem(k)}catch(e){}} };
+const DISP = (()=>{ const u=navigator.userAgent;
+  const so=/iPhone|iPad/.test(u)?"iPhone/iPad":/Android/.test(u)?"Android":/Windows/.test(u)?"Windows":/Mac/.test(u)?"Mac":"Otro";
+  const nav=/Edg/.test(u)?"Edge":/OPR|Opera/.test(u)?"Opera":/Chrome/.test(u)?"Chrome":/Safari/.test(u)?"Safari":/Firefox/.test(u)?"Firefox":"Navegador";
+  return so+" · "+nav+" · "+innerWidth+"px"; })();
+
+const S = { email:null, clave:null, rol:null, carta:[], eleccion:null, texto:null, textos:null, completa:false, t0:null, preview:false };
+
+async function api(datos){
+  const r = await fetch(URL_SERVIDOR, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body: JSON.stringify(Object.assign({ email:S.email, clave:S.clave, disp:DISP }, datos)) });
+  return r.json();
+}
+const evento = (ev, det) => { if(S.rol==="lectora") api({accion:"evento", evento:ev, detalle:det||""}).catch(()=>{}); };
+
+/* ===== Navegación ===== */
+function mostrar(id){
+  document.querySelectorAll(".pantalla").forEach(p=>p.classList.remove("activa"));
+  $("#"+id).classList.add("activa"); window.scrollTo({top:0}); $("#progreso").style.width="0";
+}
+
+/* ===== Música (fundido entre canciones) ===== */
+const pistas = { carta:$("#a-carta"), fin:$("#a-fin"), cont:$("#a-cont") };
+const mBtn = $("#musica-btn"); let actual = null;
+function fundir(el, hasta, ms, fin){ const desde=el.volume, n=Math.max(1,ms/80); let i=0;
+  clearInterval(el._f); el._f=setInterval(()=>{ i++; el.volume=Math.max(0,Math.min(1,desde+(hasta-desde)*i/n)); if(i>=n){clearInterval(el._f); fin&&fin();} },80); }
+function sonar(nombre){
+  const nueva = pistas[nombre]; if(actual===nueva) return;
+  const vieja = actual; actual = nueva;
+  if(vieja) fundir(vieja, 0, 1500, ()=>vieja.pause());
+  nueva.currentTime = 0; nueva.volume = 0;
+  nueva.play().then(()=>{ mBtn.classList.add("visible"); iconos(true); fundir(nueva,.8,2500); })
+              .catch(()=>{ if(nueva.error) return; mBtn.classList.add("visible"); iconos(false); });
+}
+function iconos(on){ $("#ico-on").style.display=on?"":"none"; $("#ico-off").style.display=on?"none":""; mBtn.classList.toggle("sonando",on); }
+mBtn.onclick = ()=>{ if(!actual) return; if(actual.paused){ actual.play(); iconos(true);} else { actual.pause(); iconos(false);} };
+function silencio(){ if(actual){ const a=actual; fundir(a,0,800,()=>a.pause()); actual=null; } mBtn.classList.remove("visible"); }
+
+/* ===== Acceso ===== */
+$("#form-acceso").onsubmit = async ev => {
+  ev.preventDefault();
+  const email = $("#email").value.trim().toLowerCase(); if(!email) return;
+  S.email = email; S.clave = $("#clave").hidden ? null : $("#clave").value;
+  if(URL_SERVIDOR.startsWith("PEGA_")){ $("#error").textContent="Falta configurar la URL del servidor."; return; }
+  const btn=$("#btn-entrar"); btn.classList.add("cargando"); btn.innerHTML='<span class="spinner"></span>';
+  $("#error").textContent="";
+  try{
+    const r = await api({accion:"entrar"});
+    if(!r.ok){
+      if(r.necesitaClave){ $("#clave").hidden=false; $("#clave").focus(); }
+      $("#error").textContent = r.error || "No se pudo abrir."; return;
+    }
+    S.rol = r.rol;
+    if(r.rol==="admin"){ cargarAdmin(r); return; }
+    ls.set("carta_email", email);
+    S.carta = r.carta; S.eleccion = r.eleccion; S.texto = r.texto;
+    pintarCarta(); mostrar("inicio");
+  }catch(e){ $("#error").textContent="Sin conexión. Intenta de nuevo."; }
+  finally{ btn.classList.remove("cargando"); btn.textContent="Abrir"; }
+};
+// Si Catalina ya entró antes en este dispositivo, se le recuerda el correo
+if(ls.get("carta_email")) $("#email").value = ls.get("carta_email");
+
+/* ===== Inicio → carta ===== */
+$("#btn-continuar").onclick = ()=>{
+  sonar("carta"); mostrar("carta"); prepararDecision();
+  if(!S.t0){ S.t0=Date.now(); evento("empezó_lectura"); }
+};
+
+/* ===== Carta: cada párrafo se marca al verse ===== */
+let obs=null, vistos=new Set();
+function pintarCarta(){
+  const c=$("#carta-texto"); c.innerHTML=""; vistos=new Set(); S.completa=false;
+  S.carta.forEach(t=>{ const p=document.createElement("p"); p.className="reveal"; p.textContent=t; c.appendChild(p); });
+  const ps=[...c.querySelectorAll("p")];
+  if(obs) obs.disconnect();
+  obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("visto"); vistos.add(e.target); } });
+    if(!S.completa && vistos.size===ps.length){
+      S.completa=true;
+      const min=Math.max(1,Math.round((Date.now()-(S.t0||Date.now()))/60000));
+      if(!S.preview) evento("terminó_lectura", "Leyó los "+ps.length+" párrafos en ~"+min+" min · "+DISP);
+      prepararDecision();
+    }
+  },{threshold:.35});
+  ps.forEach(p=>obs.observe(p));
+}
+addEventListener("scroll",()=>{
+  if(!$("#carta").classList.contains("activa") && !$("#final").classList.contains("activa")) return;
+  const h=document.documentElement.scrollHeight-innerHeight;
+  $("#progreso").style.width=(h>0?Math.min(100,scrollY/h*100):0)+"%";
+},{passive:true});
+
+/* ===== Decisión ===== */
+function prepararDecision(){
+  const ya = !!S.eleccion;
+  $("#caminos").hidden = ya || S.preview; $("#bloqueo").hidden = ya || S.preview; $("#aviso").hidden = ya || S.preview;
+  $("#ya-elegido").hidden = !ya || S.preview;
+  if(ya){ $("#ya-texto").textContent="Ya elegiste: "+NOMBRES[S.eleccion]+". El otro camino quedó cerrado."; return; }
+  document.querySelectorAll(".camino").forEach(b=>b.disabled=!S.completa);
+  $("#bloqueo").textContent = S.completa ? "Puedes elegir" : "Lee la carta completa para poder elegir";
+}
+let pendiente=null;
+document.querySelectorAll(".camino").forEach(b=>b.onclick=()=>{
+  if(b.disabled||S.eleccion) return;
+  pendiente=b.dataset.op;
+  $("#modal-titulo").textContent="¿Estás segura?";
+  $("#modal-texto").innerHTML="Elegiste <b>"+NOMBRES[pendiente]+"</b>.<br>Esta decisión es definitiva: después de abrirla no podrás leer el otro camino, ni aquí ni en ningún otro dispositivo.";
+  $("#modal-si").textContent="Sí, abrir"; $("#modal-si").onclick=confirmarEleccion;
+  $("#modal").classList.add("abierto");
+});
+$("#modal-no").onclick=()=>{ pendiente=null; $("#modal").classList.remove("abierto"); };
+async function confirmarEleccion(){
+  if(!pendiente) return;
+  const b=$("#modal-si"); b.classList.add("cargando"); b.innerHTML='<span class="spinner"></span>';
+  try{
+    const r=await api({accion:"elegir", opcion:pendiente, leyoCompleta:S.completa});
+    if(!r.ok){ $("#modal-texto").textContent=r.error||"No se pudo guardar."; return; }
+    S.eleccion=r.eleccion; S.texto=r.texto;          // si ya había elegido en otro lado, manda la elección guardada
+    $("#modal").classList.remove("abierto"); abrirFinal(S.eleccion, S.texto);
+  }catch(e){ $("#modal-texto").textContent="Sin conexión. Intenta de nuevo."; }
+  finally{ b.classList.remove("cargando"); b.textContent="Sí, abrir"; }
+}
+$("#btn-releer").onclick=()=>abrirFinal(S.eleccion, S.texto);
+$("#btn-volver").onclick=()=>{
+  document.body.classList.remove("modo-fin"); sonar("carta"); mostrar("carta"); prepararDecision();
+  setTimeout(()=>$("#decision").scrollIntoView({behavior:"smooth"}),60);
+};
+
+function abrirFinal(op, texto){
+  if(!op || !texto) return;
+  document.body.classList.toggle("modo-fin", op==="fin");
+  sonar(op);                                   // fin → Hey · cont → Cada día más
+  $("#final-titulo").textContent = op==="cont" ? "Continuidad de nuestra historia" : "Fin de nuestra historia";
+  const c=$("#final-texto"); c.innerHTML="";
+  texto.forEach(t=>{ const p=document.createElement("p"); p.textContent=t; c.appendChild(p); });
+  $("#cierre").hidden = op!=="cont"; $("#cierre").classList.remove("on");
+  mostrar("final");
+  const ps=[...c.querySelectorAll("p")];
+  ps.forEach((p,i)=>setTimeout(()=>p.classList.add("on"),500+i*900));
+  setTimeout(()=>$("#cierre").classList.add("on"),700+ps.length*900);
+}
+
+/* ===== Panel de administrador ===== */
+let ADM=null;
+function cargarAdmin(r){
+  ADM=r; S.carta=r.carta; S.textos=r.textos; S.preview=true;
+  const e=r.estado;
+  $("#adm-estado").textContent = e.eleccion ? e.nombre : "Todavía no ha elegido";
+  $("#adm-estado").style.color = e.eleccion==="cont" ? "var(--rose)" : e.eleccion==="fin" ? "#c9d0dc" : "var(--ink)";
+  $("#adm-fecha").textContent = e.fecha ? "Elegido el "+new Date(e.fecha).toLocaleString("es-CO",{dateStyle:"long",timeStyle:"short"}) : "";
+  const reg=r.registro||[], cont=$("#adm-registro");
+  if(!reg.length){ cont.innerHTML='<p class="vacio">Aún no hay actividad.</p>'; }
+  else{
+    const tb=document.createElement("table"); tb.className="tabla";
+    reg.forEach(x=>{ const tr=tb.insertRow();
+      tr.insertCell().textContent=x.fecha;
+      const td=tr.insertCell();
+      const ev=document.createElement("div"); ev.className="ev"; ev.textContent=x.correo+" · "+x.evento.replace(/_/g," ");
+      const de=document.createElement("div"); de.className="det"; de.textContent=x.detalle;
+      td.append(ev,de); });
+    cont.innerHTML=""; cont.appendChild(tb);
+  }
+  document.body.classList.remove("vista-admin","modo-fin"); silencio(); mostrar("admin");
+}
+async function refrescarAdmin(extra){ try{ const r=await api(Object.assign({accion:"entrar"},extra||{})); if(r.ok&&r.rol==="admin") cargarAdmin(r);}catch(e){} }
+$("#adm-actualizar").onclick=()=>refrescarAdmin();
+$("#adm-salir").onclick=()=>{ S.email=S.clave=S.rol=null; S.preview=false; $("#clave").value=""; $("#clave").hidden=true; $("#email").value=""; mostrar("acceso"); };
+$("#adm-carta").onclick=()=>{ document.body.classList.add("vista-admin"); S.eleccion=null; pintarCarta(); mostrar("inicio"); };
+$("#adm-cont").onclick=()=>{ document.body.classList.add("vista-admin"); abrirFinal("cont", S.textos.cont); };
+$("#adm-fin").onclick=()=>{ document.body.classList.add("vista-admin"); abrirFinal("fin", S.textos.fin); };
+$("#cinta-admin").onclick=()=>{ document.body.classList.remove("vista-admin","modo-fin"); silencio(); mostrar("admin"); };
+$("#adm-reiniciar").onclick=()=>{
+  $("#modal-titulo").textContent="¿Reiniciar?";
+  $("#modal-texto").textContent="Se borrará la elección guardada y Catalina podrá volver a elegir. Úsalo solo para tus pruebas.";
+  $("#modal-si").textContent="Sí, reiniciar";
+  $("#modal-si").onclick=async()=>{ $("#modal").classList.remove("abierto"); await refrescarAdmin({accion:"reiniciar"}); };
+  $("#modal").classList.add("abierto");
+};
+
+/* ===== Cielo: pétalos y corazones ===== */
+(()=>{
+  const c=$("#cielo"), x=c.getContext("2d"); let W,H,dpr; const ps=[];
+  function tam(){ dpr=Math.min(devicePixelRatio||1,2); W=c.width=innerWidth*dpr; H=c.height=innerHeight*dpr; c.style.width=innerWidth+"px"; c.style.height=innerHeight+"px"; }
+  tam(); addEventListener("resize",tam);
+  const N=innerWidth<600?26:46;
+  for(let i=0;i<N;i++) ps.push(nuevo(true));
+  function nuevo(ini){ return { x:Math.random()*W, y:ini?Math.random()*H:-30*dpr, s:(6+Math.random()*12)*dpr,
+    vy:(.25+Math.random()*.7)*dpr, vx:(Math.random()-.5)*.4*dpr, r:Math.random()*6.28, vr:(Math.random()-.5)*.02,
+    a:.25+Math.random()*.5, k:Math.random()<.35?"c":"p", f:Math.random()*6.28 }; }
+  function petalo(p){ x.beginPath(); x.ellipse(0,0,p.s*.5,p.s,0,0,6.28); x.fill(); }
+  function cor(p){ const s=p.s*.6; x.beginPath(); x.moveTo(0,s*.35);
+    x.bezierCurveTo(-s,-s*.4,-s*.4,-s*1.1,0,-s*.45); x.bezierCurveTo(s*.4,-s*1.1,s,-s*.4,0,s*.35); x.fill(); }
+  (function loop(){
+    x.clearRect(0,0,W,H);
+    const fin=document.body.classList.contains("modo-fin");
+    for(const p of ps){
+      p.f+=.01; p.y+=p.vy*(fin?.5:1); p.x+=p.vx+Math.sin(p.f)*.3*dpr; p.r+=p.vr;
+      if(p.y>H+30*dpr) Object.assign(p,nuevo(false));
+      x.save(); x.translate(p.x,p.y); x.rotate(p.r); x.globalAlpha=p.a;
+      x.fillStyle=fin?"rgba(190,200,215,.7)":(p.k==="c"?"#e48aa0":"#f2c4cf");
+      p.k==="c"?cor(p):petalo(p); x.restore();
+    }
+    requestAnimationFrame(loop);
+  })();
+})();
+</script>
+</body>
+</html>
