@@ -66,11 +66,12 @@ body.modo-fin .fondo{filter:grayscale(.85) brightness(.7) hue-rotate(160deg)}
 .encabezado h2{font-family:"Pinyon Script",cursive;font-weight:400;font-size:clamp(44px,8vw,68px);color:var(--rose)}
 .encabezado .sub{margin-top:8px;letter-spacing:.3em;text-transform:uppercase;font-size:13px;color:var(--gold);opacity:.85}
 .hoja p{font-size:clamp(19px,2.4vw,22px);line-height:1.85;margin:0 0 1.5em;text-align:justify;hyphens:auto;color:var(--ink)}
-.hoja p:first-of-type::first-letter{font-family:"Pinyon Script",cursive;float:left;font-size:4.2em;line-height:.8;padding:6px 10px 0 0;color:var(--rose)}
+#carta-texto p:first-child::first-letter{font-family:"Pinyon Script",cursive;float:left;font-size:4.2em;line-height:.8;padding:6px 10px 0 0;color:var(--rose)}
 .reveal{opacity:0;transform:translateY(18px);transition:opacity 1.2s ease,transform 1.2s ease}
 .reveal.visto{opacity:1;transform:none}
 
 .decision{margin-top:70px;text-align:center;border-top:1px solid var(--line);padding-top:56px}
+.decision p{text-align:center!important;hyphens:none!important}
 .decision h3{font-family:"Pinyon Script",cursive;font-weight:400;font-size:clamp(40px,7vw,58px);color:var(--rose)}
 .decision .aviso{margin:10px auto 0;max-width:480px;font-style:italic;color:var(--ink-soft);font-size:19px;line-height:1.6}
 .bloqueo{margin-top:30px;font-size:16px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);opacity:.75}
